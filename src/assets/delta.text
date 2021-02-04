@@ -1,0 +1,59 @@
+1 <html>
+ 2     <head>
+ 3         <title></title>
+ 4         <style>
+ 5             .showBox {
+ 6                 width: 400px;
+ 7                 min-height: 100px;
+ 8                 padding: 10px;
+ 9                 border: 1px solid #000;
+10             }
+11 
+12             .text {
+13                 background: orange;
+14             }
+15         </style>
+16     </head>
+17     <div class="showBox">唧唧复唧唧，木兰当户织。不闻机杼声，唯闻女叹息。
+18 问女何所思，问女何所忆。女亦无所思，女亦无所忆。昨夜见军帖，可汗大点兵，军书十二卷，卷卷有爷名。阿爷无大儿，木兰无长兄，愿为市鞍马，从此替爷征。
+19 东市买骏马，西市买鞍鞯，南市买辔头，北市买长鞭。旦辞爷娘去，暮宿黄河边，不闻爷娘唤女声，但闻黄河流水鸣溅溅。旦辞黄河去，暮至黑山头，不闻爷娘唤女声，但闻燕山胡骑鸣啾啾。
+20     </div>
+21     <p>
+22         <input placeholder="请输入关键字" class="inputEl"/>
+23         <button onclick="sendMsg()">查找</button>
+24     </p>
+25     <script>
+26         var originalText = document.getElementsByClassName('showBox')[0].innerText;
+27         function sendMsg() {
+28             var text = originalText;
+29             var history = document.getElementsByClassName('text');
+30             if (history.length > 0) {
+31                 text = originalText;
+32             }
+33             var inputValue = document.getElementsByClassName('inputEl')[0].value;
+34             var found = findAll(text, inputValue);
+35             for (var i = 0; i < text.length; i++) {
+36                 for (var j in found) {
+37                     if (i == found[j]) {
+38                         text = originalText.split(inputValue).join(`<span class="text">${inputValue}</span>`);
+39 40                     }
+41                 }
+42             }
+43             document.getElementsByClassName('showBox')[0].innerHTML = text;
+44             document.getElementsByClassName('inputEl')[0].value = "";
+45         }
+46         function findAll(str, x) {
+47             var results = [];
+48             var len = str.length;
+49             var pos = 0;
+50             while (pos < len) {
+51                 pos = str.indexOf(x, pos);
+52                 if (pos === -1)
+53                     break;
+54                 results.push(pos);
+55                 pos = pos + 1;
+56             }
+57             return results;
+58         }
+59     </script>
+60 </html>
