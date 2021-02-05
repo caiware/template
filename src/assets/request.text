@@ -1,0 +1,142 @@
+import {loadCache} from "@/utils/cache"
+
+export function request({
+	url, 
+	method, 
+	data, 
+	header,
+	loading=true
+}) {
+	// if(loading){
+	// 	uni.showLoading({
+	// 		title: '加载中'
+	// 	});
+	// }
+	const accessToken = loadCache('accessToken')
+	let fullUrl = getApp().globalData.APP_BASE_API + url
+    // #ifdef H5
+    fullUrl = url
+    // #endif
+	return new Promise((resolve, reject) => {
+		uni.request({
+			data: data,
+			method: method,
+			url: fullUrl,
+			header: {
+				Authorization:'Bearer '+ accessToken,
+			},
+			success: function(res) {
+				if(res.statusCode==422){
+					uni.clearStorage();
+					// #ifndef APP-PLUS
+					uni.clearStorageSync();
+					// #endif
+					// #ifdef APP-PLUS
+					plus.storage.clear();
+					// #endif
+					uni.reLaunch({
+						url: "../auth/login"
+					})
+				}
+				if (getApp().globalData.debug) {
+					console.log('\n');
+					console.log('start---');
+					console.log('request:', fullUrl);
+					console.log('param:', data);
+					console.log('status:', res.statusCode);
+					console.log('response:', res.data);
+					console.log('end---');
+				}
+				if(res.statusCode >= 200 && res.statusCode < 300) {
+					resolve(res)
+				} else {
+					reject(res)
+				}
+			},
+			fail: function(err) {
+				console.log(err)
+				if (getApp().globalData.debug) {
+					console.log('\n');
+					console.log('###', '请求失败->', fullUrl);
+					reject(err);
+				}
+				if(loading){
+					uni.hideLoading();
+				}
+			},
+			complete() {
+				if(loading){
+					uni.hideLoading();
+				}
+			}
+		})
+	})
+
+
+}
+
+
+
+
+
+
+
+
+
+//2.
+import {
+	request
+} from '@/utils/request'
+
+export function bindGeTui(data) {
+	return request({
+		url: '/lift/bindGeTui',
+		method: 'POST',
+		data
+	})
+}
+export function liftRunInfo(data) {
+	return request({
+		url: '/lift/demo/lift_run_info',
+		method: 'POST',
+		data: data,
+		header: null,
+		loading: false
+	})
+}
+//demo实时数据 
+export function queryRuntime(data) {
+	return request({
+		url: '/lift/demo/query_runtime',
+		method: 'POST',
+		data
+	})
+}
+//实时数据3 
+export function queryMultiRruntime(data) {
+	return request({
+		url: '/lift/query_multi_runtime',
+		method: 'POST',
+		data: data,
+		header: null,
+		loading: false
+	})
+}
+//APP扫码绑定摄像头
+export function scanCodeBind(data) {
+	return request({
+		url: `/lift/scan_code_bind`,
+		method: 'POST',
+		data
+	})
+}
+//用户协议
+export function userAgreement(type) {
+	return request({
+		url: `/demo/user_agreement?file_type=${type}`,
+		method: 'get',
+	})
+}
+
+
+
